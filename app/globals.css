@@ -1,0 +1,459 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Dark cinematic theme with deep blacks and rich reds */
+:root {
+  /* Dark cinema background with subtle warmth */
+  --background: oklch(0.08 0.01 270);
+  --foreground: oklch(0.98 0.005 270);
+
+  /* Elevated cards with subtle glow */
+  --card: oklch(0.12 0.015 270);
+  --card-foreground: oklch(0.98 0.005 270);
+
+  /* Popovers match card elevation */
+  --popover: oklch(0.14 0.015 270);
+  --popover-foreground: oklch(0.98 0.005 270);
+
+  /* Vibrant red gradient for primary actions */
+  --primary: oklch(0.58 0.24 25);
+  --primary-foreground: oklch(0.99 0 0);
+
+  /* Orange accent for secondary actions */
+  --secondary: oklch(0.65 0.22 45);
+  --secondary-foreground: oklch(0.99 0 0);
+
+  /* Muted dark tones */
+  --muted: oklch(0.18 0.015 270);
+  --muted-foreground: oklch(0.65 0.015 270);
+
+  /* Accent with subtle red tint */
+  --accent: oklch(0.22 0.02 350);
+  --accent-foreground: oklch(0.98 0.005 270);
+
+  /* Destructive red matching cinema aesthetic */
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0 0);
+
+  /* Subtle borders with warmth */
+  --border: oklch(0.2 0.015 270);
+  --input: oklch(0.2 0.015 270);
+
+  /* Primary ring for focus states */
+  --ring: oklch(0.58 0.24 25);
+
+  /* Chart colors with cinematic palette */
+  --chart-1: oklch(0.58 0.24 25);
+  --chart-2: oklch(0.65 0.22 45);
+  --chart-3: oklch(0.55 0.2 350);
+  --chart-4: oklch(0.62 0.18 35);
+  --chart-5: oklch(0.52 0.22 15);
+
+  --radius: 0.75rem;
+
+  /* Sidebar with theater aesthetic */
+  --sidebar: oklch(0.12 0.015 270);
+  --sidebar-foreground: oklch(0.98 0.005 270);
+  --sidebar-primary: oklch(0.58 0.24 25);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.18 0.015 270);
+  --sidebar-accent-foreground: oklch(0.98 0.005 270);
+  --sidebar-border: oklch(0.2 0.015 270);
+  --sidebar-ring: oklch(0.5 0.02 270);
+}
+
+/* Enhanced dark mode with deeper blacks and richer colors */
+.dark {
+  --background: oklch(0.08 0.015 270);
+  --foreground: oklch(0.98 0.005 270);
+  --card: oklch(0.12 0.015 270);
+  --card-foreground: oklch(0.98 0.005 270);
+  --popover: oklch(0.14 0.015 270);
+  --popover-foreground: oklch(0.98 0.005 270);
+  --primary: oklch(0.68 0.26 25);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.72 0.24 45);
+  --secondary-foreground: oklch(0.08 0.015 270);
+  --muted: oklch(0.18 0.015 270);
+  --muted-foreground: oklch(0.65 0.015 270);
+  --accent: oklch(0.22 0.02 350);
+  --accent-foreground: oklch(0.98 0.005 270);
+  --destructive: oklch(0.62 0.26 27);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(0.2 0.015 270);
+  --input: oklch(0.2 0.015 270);
+  --ring: oklch(0.68 0.26 25);
+  --chart-1: oklch(0.68 0.26 25);
+  --chart-2: oklch(0.72 0.24 45);
+  --chart-3: oklch(0.62 0.22 350);
+  --chart-4: oklch(0.7 0.2 35);
+  --chart-5: oklch(0.6 0.24 15);
+  --sidebar: oklch(0.16 0.015 270);
+  --sidebar-foreground: oklch(0.98 0.005 270);
+  --sidebar-primary: oklch(0.68 0.26 25);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.22 0.015 270);
+  --sidebar-accent-foreground: oklch(0.98 0.005 270);
+  --sidebar-border: oklch(0.24 0.015 270);
+  --sidebar-ring: oklch(0.5 0.02 270);
+}
+
+@theme inline {
+  --font-sans: "Geist", "Geist Fallback";
+  --font-mono: "Geist Mono", "Geist Mono Fallback";
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    /* Dark cinematic background with subtle film grain texture */
+    @apply bg-background text-foreground;
+    background-image: radial-gradient(ellipse at top, rgba(139, 0, 0, 0.05) 0%, transparent 50%),
+      radial-gradient(ellipse at bottom, rgba(220, 38, 38, 0.05) 0%, transparent 50%);
+  }
+}
+
+/* Added film grain texture effect */
+@keyframes grain {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  10% {
+    transform: translate(-5%, -10%);
+  }
+  20% {
+    transform: translate(-15%, 5%);
+  }
+  30% {
+    transform: translate(7%, -25%);
+  }
+  40% {
+    transform: translate(-5%, 25%);
+  }
+  50% {
+    transform: translate(-15%, 10%);
+  }
+  60% {
+    transform: translate(15%, 0%);
+  }
+  70% {
+    transform: translate(0%, 15%);
+  }
+  80% {
+    transform: translate(3%, 35%);
+  }
+  90% {
+    transform: translate(-10%, 10%);
+  }
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  right: -50%;
+  bottom: -50%;
+  width: 200%;
+  height: 200vh;
+  background: transparent
+    url('data:image/svg+xml;utf8,<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg"><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noiseFilter)"/></svg>')
+    repeat;
+  background-size: 200px 200px;
+  opacity: 0.03;
+  pointer-events: none;
+  animation: grain 8s steps(10) infinite;
+  z-index: 9999;
+}
+
+/* Added gradient text utility classes */
+.gradient-text {
+  background: linear-gradient(135deg, oklch(0.58 0.24 25) 0%, oklch(0.65 0.22 45) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Enhanced cinematic hero with deeper vignette and better blur effects */
+.cinematic-hero {
+  position: relative;
+  min-height: 100vh;
+  background: #0a0a0a;
+  overflow: hidden;
+}
+
+/* Dark theme overlay - original dark cinema aesthetic */
+.hero-overlay-dark::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.4) 40%, rgba(0, 0, 0, 0.85) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hero-overlay-dark::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.9) 0%,
+    transparent 25%,
+    transparent 75%,
+    rgba(0, 0, 0, 0.95) 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Light theme overlay - modern theater with white tones */
+.hero-overlay-light::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0.5) 40%,
+    rgba(240, 240, 240, 0.85) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hero-overlay-light::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 255, 255, 0.6) 25%,
+    rgba(255, 255, 255, 0.5) 75%,
+    rgba(240, 240, 240, 0.95) 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Dark white theme overlay - premium lounge aesthetic */
+.hero-overlay-dark-white::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(250, 250, 250, 0.2) 0%,
+    rgba(235, 235, 235, 0.5) 40%,
+    rgba(220, 220, 220, 0.85) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hero-overlay-dark-white::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(240, 240, 240, 0.9) 0%,
+    rgba(250, 250, 250, 0.4) 25%,
+    rgba(245, 245, 245, 0.4) 75%,
+    rgba(235, 235, 235, 0.95) 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Gradient theme overlay - cinematic abstract with red-orange gradient */
+.hero-overlay-gradient::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 0%, rgba(139, 0, 0, 0.3) 40%, rgba(0, 0, 0, 0.8) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hero-overlay-gradient::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(139, 0, 0, 0.7) 0%,
+    rgba(0, 0, 0, 0.4) 30%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.4) 70%,
+    rgba(185, 28, 28, 0.7) 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 3;
+}
+
+/* Enhanced blur on background image for cinematic depth */
+.hero-bg-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.4;
+  filter: blur(4px);
+  z-index: 0;
+  transform: scale(1.1);
+  transition: opacity 0.5s ease;
+}
+
+/* Higher opacity for light themes */
+.hero-overlay-light .hero-bg-image,
+.hero-overlay-dark-white .hero-bg-image {
+  opacity: 0.55;
+}
+
+/* Enhanced neon glow with red maroon accents and depth */
+/* Reduced glow intensity to very subtle for refined look */
+.neon-glow {
+  text-shadow: 0 0 10px rgba(220, 38, 38, 0.3), 0 0 20px rgba(220, 38, 38, 0.2), 0 0 30px rgba(185, 28, 28, 0.15), 0 2px
+    15px rgba(0, 0, 0, 0.4);
+  filter: drop-shadow(0 0 15px rgba(220, 38, 38, 0.25));
+}
+
+/* Added elegant title styling with better letter spacing */
+.hero-title {
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  font-weight: 800;
+}
+
+/* Subtle animation for glowing effect */
+/* Subtle animation for glowing effect with reduced intensity */
+@keyframes pulse-glow {
+  0%,
+  100% {
+    text-shadow: 0 0 10px rgba(220, 38, 38, 0.3), 0 0 20px rgba(220, 38, 38, 0.2), 0 0 30px rgba(185, 28, 28, 0.15);
+  }
+  50% {
+    text-shadow: 0 0 15px rgba(220, 38, 38, 0.4), 0 0 30px rgba(220, 38, 38, 0.3), 0 0 45px rgba(185, 28, 28, 0.2);
+  }
+}
+
+.neon-glow {
+  animation: pulse-glow 4s ease-in-out infinite;
+}
+
+/* Added spotlight effects for dramatic lighting */
+@keyframes spotlight {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: translateY(0px);
+  }
+  50% {
+    opacity: 0.25;
+    transform: translateY(-20px);
+  }
+}
+
+.cinematic-spotlight {
+  position: absolute;
+  width: 600px;
+  height: 800px;
+  background: radial-gradient(ellipse at center, rgba(220, 38, 38, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  filter: blur(80px);
+  animation: spotlight 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Added curtain borders for theater effect */
+.theater-curtain {
+  position: relative;
+}
+
+.theater-curtain::before,
+.theater-curtain::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 60px;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(139, 0, 0, 0.3) 0%, rgba(139, 0, 0, 0.1) 50%, transparent 100%);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.theater-curtain::before {
+  left: 0;
+}
+
+.theater-curtain::after {
+  right: 0;
+  transform: scaleX(-1);
+}
+
+/* Enhanced card styling with cinematic glow */
+.card-cinematic {
+  position: relative;
+  background: oklch(0.12 0.015 270);
+  border: 1px solid oklch(0.2 0.015 270);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(220, 38, 38, 0.1);
+}
+
+.card-cinematic:hover {
+  border-color: oklch(0.58 0.24 25);
+  box-shadow: 0 0 30px rgba(220, 38, 38, 0.2), inset 0 1px 0 rgba(220, 38, 38, 0.2);
+}
+
+/* Smooth scroll behavior for navigation */
+html {
+  scroll-behavior: smooth;
+}
