@@ -2,56 +2,20 @@
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
 import type { User, UserProfile } from "./types"
+import { loginUser as dbLoginUser, registerUser as dbRegisterUser, getUserProfile } from "@/app/actions/auth"
 
 interface AuthContextType {
   user: User | null
   profile: UserProfile | null
   isLoading: boolean
   login: (email: string, password: string) => Promise<void>
+  register: (email: string, password: string, name: string) => Promise<void>
   logout: () => void
   updateProfile: (profileData: Partial<UserProfile>) => Promise<void>
   isAuthenticated: boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
-
-const mockProfile: UserProfile = {
-  id: "1",
-  email: "user@example.com",
-  name: "John Doe",
-  phone: "+91 98765 43210",
-  dateOfBirth: "1990-05-15",
-  favoriteGenres: ["Action", "Thriller", "Drama"],
-  preferredCity: "Mumbai",
-  preferredTheater: "PVR Icon",
-  loyaltyPoints: 2850,
-  watchedMovies: ["1", "2", "3"],
-  bookingHistory: [
-    {
-      id: "B001",
-      movieTitle: "Pushpa 2: The Rule",
-      movieImage: "/pushpa-2-the-rule-poster.jpg",
-      date: "2024-12-15",
-      showtime: "7:00 PM",
-      theater: "PVR Icon, Mumbai",
-      seats: ["H5", "H6"],
-      totalAmount: 2988,
-      status: "completed",
-    },
-    {
-      id: "B002",
-      movieTitle: "Animal",
-      movieImage: "/animal-movie-poster.jpg",
-      date: "2024-12-20",
-      showtime: "9:30 PM",
-      theater: "INOX Leisure Mall, Delhi",
-      seats: ["F8", "F9"],
-      totalAmount: 3320,
-      status: "upcoming",
-    },
-  ],
-  avatar: "/placeholder-user.jpg",
-}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
@@ -61,15 +25,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const initAuth = async () => {
       try {
-        // Simulate checking for existing session
+        // Check for existing session
         const storedUser = localStorage.getItem("user")
         if (storedUser) {
           const userData = JSON.parse(storedUser)
           setUser(userData)
-          setProfile(mockProfile)
+
+          // Load profile from database
+          const userProfile = await getUserProfile(userData.id)
+          if (userProfile) {
+            setProfile(userProfile as any)
+          }
         }
       } catch (error) {
         console.error("Failed to initialize auth:", error)
+        localStorage.removeItem("user")
       } finally {
         setIsLoading(false)
       }
@@ -78,23 +48,65 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     initAuth()
   }, [])
 
-  const login = async (email: string, password: string) => {
+  const register = async (email: string, password: string, name: string) => {
     setIsLoading(true)
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      const result = await dbRegisterUser(email, password, name)
+
+      if (!result.success || !result.user) {
+        throw new Error(result.error || "Registration failed")
+      }
 
       const userData: User = {
-        id: "1",
-        email,
-        name: "John Doe",
+        id: result.user.id,
+        email: result.user.email,
+        name: result.user.name || name,
         isAuthenticated: true,
       }
 
       setUser(userData)
-      setProfile(mockProfile)
+      setProfile({
+        id: userData.id,
+        email: userData.email,
+        name: userData.name,
+        bookingHistory: [],
+      } as any)
+
       localStorage.setItem("user", JSON.stringify(userData))
     } catch (error) {
-      throw new Error("Login failed")
+      throw new Error(error instanceof Error ? error.message : "Registration failed")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const login = async (email: string, password: string) => {
+    setIsLoading(true)
+    try {
+      const result = await dbLoginUser(email, password)
+
+      if (!result.success || !result.user) {
+        throw new Error(result.error || "Login failed")
+      }
+
+      const userData: User = {
+        id: result.user.id,
+        email: result.user.email,
+        name: result.user.name || "User",
+        isAuthenticated: true,
+      }
+
+      setUser(userData)
+
+      // Load user profile from database
+      const userProfile = await getUserProfile(result.user.id)
+      if (userProfile) {
+        setProfile(userProfile as any)
+      }
+
+      localStorage.setItem("user", JSON.stringify(userData))
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : "Login failed")
     } finally {
       setIsLoading(false)
     }
@@ -130,6 +142,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         profile,
         isLoading,
         login,
+        register,
         logout,
         updateProfile,
         isAuthenticated: !!user?.isAuthenticated,
