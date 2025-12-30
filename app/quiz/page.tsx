@@ -1,11 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Header } from "@/components/header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Sparkles, Trophy, ArrowRight } from "lucide-react"
-import { movies } from "@/lib/mock-data"
+import { getMovies } from "@/app/actions/get-movies"
+import type { Movie } from "@/lib/types"
 
 interface Question {
   question: string
@@ -14,6 +15,7 @@ interface Question {
 }
 
 export default function QuizPage() {
+  const [movies, setMovies] = useState<Movie[]>([])
   const [selectedMovie, setSelectedMovie] = useState<string | null>(null)
   const [questions, setQuestions] = useState<Question[]>([])
   const [currentQuestion, setCurrentQuestion] = useState(0)
@@ -21,6 +23,15 @@ export default function QuizPage() {
   const [score, setScore] = useState(0)
   const [showResult, setShowResult] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [quizMessage, setQuizMessage] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchMoviesData = async () => {
+      const data = await getMovies()
+      setMovies(data)
+    }
+    fetchMoviesData()
+  }, [])
 
   const startQuiz = async (movieId: string) => {
     const movie = movies.find((m) => m.id === movieId)
@@ -28,8 +39,11 @@ export default function QuizPage() {
 
     setLoading(true)
     setSelectedMovie(movieId)
+    setQuizMessage(null)
 
     try {
+      console.log("[Quiz] Requesting quiz for:", movie.title, movie.genre)
+
       const response = await fetch("/api/quiz", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -39,10 +53,39 @@ export default function QuizPage() {
         }),
       })
 
+      console.log("[Quiz] Response status:", response.status)
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || "Failed to generate quiz")
+      }
+
       const data = await response.json()
-      setQuestions(data.questions)
-    } catch (error) {
-      console.error("[v0] Failed to load quiz:", error)
+      console.log("[Quiz] Response data:", data)
+
+      if (data.error) {
+        console.error("[Quiz] Quiz API error:", data.error)
+        alert(`Quiz generation failed: ${data.error}. Please check your OpenAI API key in .env file.`)
+        setQuestions([])
+      } else if (data.questions && Array.isArray(data.questions)) {
+        setQuestions(data.questions)
+
+        // Show message if using fallback
+        if (data.usingFallback) {
+          setQuizMessage(data.message || "Using generic quiz questions")
+          console.warn("[Quiz] Using fallback quiz:", data.message)
+        } else {
+          setQuizMessage(null)
+        }
+      } else {
+        console.error("[Quiz] Invalid response format:", data)
+        alert("Invalid response from quiz API. Please try again.")
+        setQuestions([])
+      }
+    } catch (error: any) {
+      console.error("[Quiz] Failed to load quiz:", error)
+      alert(`Failed to generate quiz: ${error.message}. Please check the console for details.`)
+      setQuestions([])
     } finally {
       setLoading(false)
     }
@@ -77,6 +120,7 @@ export default function QuizPage() {
     setSelectedAnswer(null)
     setScore(0)
     setShowResult(false)
+    setQuizMessage(null)
   }
 
   const movie = movies.find((m) => m.id === selectedMovie)
@@ -153,8 +197,25 @@ export default function QuizPage() {
             </Card>
           )}
 
+          {/* Fallback Message */}
+          {quizMessage && selectedMovie && questions.length > 0 && !loading && (
+            <div className="mb-4 rounded-lg border border-yellow-500/50 bg-yellow-500/10 p-4">
+              <div className="flex items-start gap-3">
+                <Sparkles className="h-5 w-5 text-yellow-600 dark:text-yellow-500 flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-yellow-900 dark:text-yellow-200">
+                    Note: {quizMessage}
+                  </p>
+                  <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-1">
+                    Configure your OpenAI API key in the .env file to enable AI-generated questions.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Quiz Questions */}
-          {selectedMovie && questions.length > 0 && !showResult && !loading && (
+          {selectedMovie && questions && questions.length > 0 && !showResult && !loading && (
             <Card className="card-cinematic">
               <CardHeader>
                 <div className="flex items-center justify-between">
@@ -174,15 +235,14 @@ export default function QuizPage() {
                     <Button
                       key={idx}
                       variant={selectedAnswer === idx ? "default" : "outline"}
-                      className={`h-auto justify-start p-4 text-left ${
-                        selectedAnswer !== null
-                          ? idx === questions[currentQuestion].correctAnswer
-                            ? "border-green-500 bg-green-500/10 text-green-700 dark:text-green-400"
-                            : selectedAnswer === idx
-                              ? "border-destructive bg-destructive/10 text-destructive"
-                              : ""
-                          : ""
-                      }`}
+                      className={`h-auto justify-start p-4 text-left ${selectedAnswer !== null
+                        ? idx === questions[currentQuestion].correctAnswer
+                          ? "border-green-500 bg-green-500/10 text-green-700 dark:text-green-400"
+                          : selectedAnswer === idx
+                            ? "border-destructive bg-destructive/10 text-destructive"
+                            : ""
+                        : ""
+                        }`}
                       onClick={() => selectedAnswer === null && handleAnswer(idx)}
                       disabled={selectedAnswer !== null}
                     >

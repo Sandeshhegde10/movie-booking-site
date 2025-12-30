@@ -1,0 +1,59 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  name      String?
+  password  String
+  bookings  Booking[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Movie {
+  id          String   @id @default(cuid())
+  title       String
+  genre       String
+  duration    String
+  rating      String
+  image       String
+  description String
+  language    String?
+  showtimes   Showtime[]
+  cities      String // Comma separated list of cities
+  bookings    Booking[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Showtime {
+  id        String   @id @default(cuid())
+  time      String
+  movieId   String
+  movie     Movie    @relation(fields: [movieId], references: [id])
+  bookings  Booking[]
+}
+
+model Booking {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  movieId     String
+  movie       Movie    @relation(fields: [movieId], references: [id])
+  showtimeId  String
+  showtime    Showtime @relation(fields: [showtimeId], references: [id])
+  seats       String   // JSON string of seats
+  total       Float
+  status      String   @default("confirmed")
+  createdAt   DateTime @default(now())
+}

@@ -1,21 +1,40 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Header } from "@/components/header"
 import { MovieCard } from "@/components/movie-card"
-import { allMovies } from "@/lib/all-movies-data"
+import { getMovies } from "@/app/actions/get-movies"
 import { Button } from "@/components/ui/button"
 import { Film, Filter } from "lucide-react"
+import type { Movie } from "@/lib/types"
 
 export default function MoviesPage() {
   const [selectedGenre, setSelectedGenre] = useState<string>("all")
+  const [movies, setMovies] = useState<Movie[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchMovies = async () => {
+      try {
+        const fetchedMovies = await getMovies()
+        // Map Prisma result to expected Movie type if necessary, or ensure types match
+        // For now, assuming direct compatibility or close enough
+        setMovies(fetchedMovies as unknown as Movie[])
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchMovies()
+  }, [])
 
   // Group movies by genre
   const genres = ["all", "action", "thriller", "horror", "drama", "comedy", "romance", "sci-fi"]
 
   const getMoviesByGenre = (genre: string) => {
-    if (genre === "all") return allMovies
-    return allMovies.filter((movie) => movie.genre.toLowerCase().includes(genre))
+    if (genre === "all") return movies
+    return movies.filter((movie) => movie.genre.toLowerCase().includes(genre))
   }
 
   const genreMovies = getMoviesByGenre(selectedGenre)
@@ -59,11 +78,10 @@ export default function MoviesPage() {
                   key={genre}
                   variant={selectedGenre === genre ? "default" : "outline"}
                   onClick={() => setSelectedGenre(genre)}
-                  className={`rounded-full px-6 capitalize ${
-                    selectedGenre === genre
-                      ? "bg-gradient-to-r from-red-600 to-red-700 shadow-lg shadow-red-600/30"
-                      : ""
-                  }`}
+                  className={`rounded-full px-6 capitalize ${selectedGenre === genre
+                    ? "bg-gradient-to-r from-red-600 to-red-700 shadow-lg shadow-red-600/30"
+                    : ""
+                    }`}
                 >
                   {genre}
                 </Button>
