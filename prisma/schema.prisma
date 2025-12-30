@@ -6,8 +6,10 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
+  // For local development with SQLite, use: provider = "sqlite"
+  // For production (Vercel), use: provider = "postgresql"
 }
 
 model User {
