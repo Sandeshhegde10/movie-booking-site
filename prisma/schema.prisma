@@ -6,14 +6,12 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
-  // For local development: provider = "sqlite" (current)
-  // For production (Vercel): change to provider = "postgresql"
 }
 
 model User {
-  id        String    @id @default(cuid())
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
   email     String    @unique
   name      String?
   password  String
@@ -23,7 +21,7 @@ model User {
 }
 
 model Movie {
-  id          String   @id @default(cuid())
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
   title       String
   genre       String
   duration    String
@@ -34,28 +32,28 @@ model Movie {
   showtimes   Showtime[]
   cities      String // Comma separated list of cities
   bookings    Booking[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
 
 model Showtime {
-  id        String   @id @default(cuid())
-  time      String
-  movieId   String
-  movie     Movie    @relation(fields: [movieId], references: [id])
-  bookings  Booking[]
+  id       String    @id @default(auto()) @map("_id") @db.ObjectId
+  time     String
+  movieId  String    @db.ObjectId
+  movie    Movie     @relation(fields: [movieId], references: [id])
+  bookings Booking[]
 }
 
 model Booking {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  movieId     String
-  movie       Movie    @relation(fields: [movieId], references: [id])
-  showtimeId  String
-  showtime    Showtime @relation(fields: [showtimeId], references: [id])
-  seats       String   // JSON string of seats
-  total       Float
-  status      String   @default("confirmed")
-  createdAt   DateTime @default(now())
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String   @db.ObjectId
+  user       User     @relation(fields: [userId], references: [id])
+  movieId    String   @db.ObjectId
+  movie      Movie    @relation(fields: [movieId], references: [id])
+  showtimeId String   @db.ObjectId
+  showtime   Showtime @relation(fields: [showtimeId], references: [id])
+  seats      String   // JSON string of seats
+  total      Float
+  status     String   @default("confirmed")
+  createdAt  DateTime @default(now())
 }
