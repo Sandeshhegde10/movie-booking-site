@@ -36,7 +36,7 @@ export default function ConfirmationPageClient({ id }: { id: string }) {
 
     const bookingNumber = `BK${Date.now().toString().slice(-8)}`
     const totalAmount = calculateTotal()
-    const theaterName = selectedTheater?.name || "Cinema Hall 1"
+    const theaterName = selectedTheater || "Cinema Hall 1"
 
     return (
         <div className="relative min-h-screen bg-gradient-to-b from-background via-primary/5 to-background">
