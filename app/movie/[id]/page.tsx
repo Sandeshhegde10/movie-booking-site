@@ -11,6 +11,12 @@ export async function generateStaticParams() {
 
 async function getMovieById(id: string): Promise<Movie | null> {
   try {
+    // Validate if ID looks like a MongoDB ObjectID (24 hex chars)
+    if (!/^[0-9a-f]{24}$/.test(id)) {
+      // Invalid ObjectID format, skip database call and use static data
+      return allMovies.find((m) => m.id === id) || null
+    }
+
     // First try to find in database (with proper ObjectID)
     const dbMovie = await prisma.movie.findUnique({
       where: { id },
@@ -42,8 +48,7 @@ async function getMovieById(id: string): Promise<Movie | null> {
     const staticMovie = allMovies.find((m) => m.id === id)
     return staticMovie || null
   } catch (error) {
-    console.error("Error fetching movie:", error)
-    // Fallback to static data
+    // Silently fallback to static data for any database errors
     return allMovies.find((m) => m.id === id) || null
   }
 }
