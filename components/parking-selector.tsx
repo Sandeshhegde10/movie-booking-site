@@ -94,19 +94,19 @@ export function ParkingSelector({ slots, onSlotSelected, selectedSlot }: Parking
           <div className="flex h-10 w-10 items-center justify-center rounded-lg border-2 border-secondary bg-secondary/50">
             <Car className="h-4 w-4" />
           </div>
-          <span className="text-muted-foreground">Standard (₹415)</span>
+          <span className="text-muted-foreground">Standard (₹99)</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg border-2 border-accent bg-accent/50">
             <Shield className="h-4 w-4" />
           </div>
-          <span className="text-muted-foreground">Covered (₹830)</span>
+          <span className="text-muted-foreground">Covered (₹199)</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg border-2 border-primary bg-primary/10">
             <Sparkles className="h-4 w-4" />
           </div>
-          <span className="text-muted-foreground">VIP (₹1,245)</span>
+          <span className="text-muted-foreground">VIP (₹299)</span>
         </div>
       </div>
 

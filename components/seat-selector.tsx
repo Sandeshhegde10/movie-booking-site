@@ -90,15 +90,15 @@ export function SeatSelector({ seats, onSeatsSelected, selectedSeats }: SeatSele
       <div className="flex flex-wrap items-center justify-center gap-4 text-sm">
         <div className="flex items-center gap-2">
           <div className="h-6 w-6 rounded-t-lg bg-secondary" />
-          <span className="text-muted-foreground">Standard (₹996)</span>
+          <span className="text-muted-foreground">Standard (₹249)</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="h-6 w-6 rounded-t-lg bg-accent" />
-          <span className="text-muted-foreground">Premium (₹1,494)</span>
+          <span className="text-muted-foreground">Premium (₹374)</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="h-6 w-6 rounded-t-lg bg-primary/20" />
-          <span className="text-muted-foreground">VIP (₹2,075)</span>
+          <span className="text-muted-foreground">VIP (₹499)</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="h-6 w-6 rounded-t-lg bg-muted" />
