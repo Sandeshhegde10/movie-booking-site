@@ -9,7 +9,7 @@ interface MovieCardProps {
 
 export function MovieCard({ movie }: MovieCardProps) {
   return (
-    <Link href={`/movie/${movie.id}`}>
+    <Link href={`/movie/${movie.id}`} prefetch={true}>
       <Card className="group overflow-hidden border-border/50 bg-card/80 backdrop-blur transition-all hover:scale-[1.02] hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/30">
         <div className="relative aspect-[2/3] overflow-hidden">
           <img
