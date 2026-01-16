@@ -6,7 +6,7 @@ import { loadStripe } from "@stripe/stripe-js"
 
 import { startCheckoutSession } from "@/app/actions/stripe"
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
+const stripePromise = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ? loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) : Promise.resolve(null)
 
 interface CheckoutProps {
   amount: number
