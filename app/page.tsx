@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { Header } from "@/components/header"
+import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { Play, MapPin, FilmIcon, Sparkles, Star, MonitorPlay, Armchair, Clapperboard, ArrowRight } from "lucide-react"
 import Link from "next/link"
@@ -24,11 +25,12 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
+    <>
+      <div className="min-h-screen bg-background">
+        <Header />
 
-      {/* Hero Section */}
-      <section className="cinematic-hero relative overflow-hidden">
+        {/* Hero Section */}
+        <section className="cinematic-hero relative overflow-hidden">
         {/* Background Image with Blur */}
         <div className="absolute inset-0">
           <Image src="/cinema-lobby.jpg" alt="Cinema Interior" fill className="hero-bg-image" priority />
@@ -224,6 +226,8 @@ export default function Home() {
           </Link>
         </div>
       </section>
-    </div>
+      </div>
+      <Footer />
+    </>
   )
 }

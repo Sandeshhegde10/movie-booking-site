@@ -5,7 +5,6 @@ import { Analytics } from "@vercel/analytics/next"
 import { BookingProvider } from "@/lib/booking-context"
 import { AuthProvider } from "@/lib/auth-context"
 import { Toaster } from "@/components/ui/toaster"
-import { Footer } from "@/components/footer"
 import "./globals.css"
 
 const _geist = Geist({ subsets: ["latin"] })
@@ -42,14 +41,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`font-sans antialiased flex flex-col min-h-screen`}>
+      <body className={`font-sans antialiased`}>
         <AuthProvider>
-          <BookingProvider>
-            <div className="flex-1">
-              {children}
-            </div>
-            <Footer />
-          </BookingProvider>
+          <BookingProvider>{children}</BookingProvider>
         </AuthProvider>
         <Toaster />
         <Analytics />
