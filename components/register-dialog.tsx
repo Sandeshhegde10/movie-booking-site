@@ -13,9 +13,10 @@ import { useToast } from "@/hooks/use-toast"
 interface RegisterDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
+    onSignInClick?: () => void
 }
 
-export function RegisterDialog({ open, onOpenChange }: RegisterDialogProps) {
+export function RegisterDialog({ open, onOpenChange, onSignInClick }: RegisterDialogProps) {
     const [name, setName] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
@@ -136,6 +137,17 @@ export function RegisterDialog({ open, onOpenChange }: RegisterDialogProps) {
                         {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         Create Account
                     </Button>
+
+                    <div className="text-center text-sm">
+                        <span className="text-muted-foreground">Already have an account? </span>
+                        <button
+                            type="button"
+                            onClick={onSignInClick}
+                            className="font-medium text-primary hover:underline"
+                        >
+                            Sign in here
+                        </button>
+                    </div>
                 </form>
             </DialogContent>
         </Dialog>

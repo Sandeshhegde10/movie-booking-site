@@ -6,10 +6,12 @@ import { Button } from "@/components/ui/button"
 import { useAuth } from "@/lib/auth-context"
 import { useState } from "react"
 import { LoginDialog } from "./login-dialog"
+import { RegisterDialog } from "./register-dialog"
 
 export function Header() {
   const { isAuthenticated, logout, profile } = useAuth()
   const [showLogin, setShowLogin] = useState(false)
+  const [showRegister, setShowRegister] = useState(false)
 
   return (
     <>
@@ -61,16 +63,22 @@ export function Header() {
                 </Button>
               </div>
             ) : (
-              <Button variant="ghost" size="sm" onClick={() => setShowLogin(true)}>
-                <LogIn className="mr-2 h-4 w-4" />
-                Sign In
-              </Button>
+              <>
+                <Button variant="ghost" size="sm" onClick={() => setShowLogin(true)}>
+                  <LogIn className="mr-2 h-4 w-4" />
+                  Sign In
+                </Button>
+                <Button size="sm" onClick={() => setShowRegister(true)}>
+                  Sign Up
+                </Button>
+              </>
             )}
           </div>
         </div>
       </header>
 
-      <LoginDialog open={showLogin} onOpenChange={setShowLogin} />
+      <LoginDialog open={showLogin} onOpenChange={setShowLogin} onSignUpClick={() => { setShowLogin(false); setShowRegister(true); }} />
+      <RegisterDialog open={showRegister} onOpenChange={setShowRegister} onSignInClick={() => { setShowRegister(false); setShowLogin(true); }} />
     </>
   )
 }

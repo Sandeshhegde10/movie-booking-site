@@ -5,12 +5,15 @@ import bcrypt from "bcryptjs"
 
 export async function registerUser(email: string, password: string, name: string) {
     try {
+        console.log("📝 Registration attempt for:", email)
+
         // Check if user already exists
         const existingUser = await prisma.user.findUnique({
             where: { email }
         })
 
         if (existingUser) {
+            console.log("⚠️ User already exists:", email)
             return { success: false, error: "User already exists" }
         }
 
@@ -26,6 +29,7 @@ export async function registerUser(email: string, password: string, name: string
             }
         })
 
+        console.log("✅ User created successfully:", email)
         return {
             success: true,
             user: {
@@ -35,17 +39,21 @@ export async function registerUser(email: string, password: string, name: string
             }
         }
     } catch (error) {
-        console.error("Registration error:", error)
+        console.error("❌ Registration error:", error)
         return { success: false, error: "Failed to create account" }
     }
 }
 
 export async function loginUser(email: string, password: string) {
     try {
+        console.log("🔐 Login attempt for:", email)
+
         // Find user by email
         const user = await prisma.user.findUnique({
             where: { email }
         })
+
+        console.log("👤 User found:", user ? "YES" : "NO")
 
         if (!user) {
             return { success: false, error: "Invalid email or password" }
@@ -54,10 +62,13 @@ export async function loginUser(email: string, password: string) {
         // Verify password
         const isValidPassword = await bcrypt.compare(password, user.password)
 
+        console.log("🔑 Password valid:", isValidPassword)
+
         if (!isValidPassword) {
             return { success: false, error: "Invalid email or password" }
         }
 
+        console.log("✅ Login successful for:", email)
         return {
             success: true,
             user: {
@@ -67,7 +78,7 @@ export async function loginUser(email: string, password: string) {
             }
         }
     } catch (error) {
-        console.error("Login error:", error)
+        console.error("❌ Login error:", error)
         return { success: false, error: "Login failed" }
     }
 }

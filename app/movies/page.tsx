@@ -1,12 +1,33 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { Suspense, useState, useEffect, useMemo } from "react"
 import { Header } from "@/components/header"
 import { MovieCard } from "@/components/movie-card"
 import { getMovies } from "@/app/actions/get-movies"
 import { Button } from "@/components/ui/button"
 import { Film, Filter } from "lucide-react"
 import type { Movie } from "@/lib/types"
+
+// Skeleton loader for movie cards
+function MovieSkeleton() {
+  return (
+    <div className="animate-pulse">
+      <div className="aspect-[2/3] bg-muted rounded-lg mb-2" />
+      <div className="h-4 bg-muted rounded w-3/4 mb-2" />
+      <div className="h-3 bg-muted rounded w-1/2" />
+    </div>
+  )
+}
+
+function MovieGrid({ movies }: { movies: Movie[] }) {
+  return (
+    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {movies.map((movie) => (
+        <MovieCard key={movie.id} movie={movie} />
+      ))}
+    </div>
+  )
+}
 
 export default function MoviesPage() {
   const [selectedGenre, setSelectedGenre] = useState<string>("all")
@@ -17,8 +38,6 @@ export default function MoviesPage() {
     const fetchMovies = async () => {
       try {
         const fetchedMovies = await getMovies()
-        // Map Prisma result to expected Movie type if necessary, or ensure types match
-        // For now, assuming direct compatibility or close enough
         setMovies(fetchedMovies as unknown as Movie[])
       } catch (error) {
         console.error(error)
@@ -29,15 +48,17 @@ export default function MoviesPage() {
     fetchMovies()
   }, [])
 
-  // Group movies by genre
-  const genres = ["all", "action", "thriller", "horror", "drama", "comedy", "romance", "sci-fi"]
+  // Group movies by genre - memoized to prevent unnecessary recalculations
+  const genres = useMemo(() => ["all", "action", "thriller", "horror", "drama", "comedy", "romance", "sci-fi"], [])
 
-  const getMoviesByGenre = (genre: string) => {
-    if (genre === "all") return movies
-    return movies.filter((movie) => movie.genre.toLowerCase().includes(genre))
-  }
+  const getMoviesByGenre = useMemo(() => {
+    return (genre: string) => {
+      if (genre === "all") return movies
+      return movies.filter((movie) => movie.genre.toLowerCase().includes(genre))
+    }
+  }, [movies])
 
-  const genreMovies = getMoviesByGenre(selectedGenre)
+  const genreMovies = useMemo(() => getMoviesByGenre(selectedGenre), [selectedGenre, getMoviesByGenre])
 
   return (
     <div className="min-h-screen">
@@ -89,42 +110,53 @@ export default function MoviesPage() {
             </div>
           </div>
 
-          {/* Movies by Genre Sections */}
-          {selectedGenre === "all" ? (
-            <div className="space-y-16">
-              {genres.slice(1).map((genre) => {
-                const movies = getMoviesByGenre(genre)
-                if (movies.length === 0) return null
-
-                return (
-                  <section key={genre}>
-                    <div className="mb-6 flex items-center gap-3">
-                      <h2 className="text-3xl font-bold capitalize">{genre}</h2>
-                      <span className="rounded-full bg-primary/20 px-3 py-1 text-sm font-semibold">
-                        {movies.length} movies
-                      </span>
-                    </div>
-                    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                      {movies.map((movie) => (
-                        <MovieCard key={movie.id} movie={movie} />
-                      ))}
-                    </div>
-                  </section>
-                )
-              })}
+          {/* Loading state */}
+          {isLoading ? (
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {[...Array(8)].map((_, i) => (
+                <MovieSkeleton key={i} />
+              ))}
             </div>
           ) : (
-            <section>
-              <div className="mb-6 text-center">
-                <h2 className="text-3xl font-bold capitalize">{selectedGenre} Movies</h2>
-                <p className="mt-2 text-muted-foreground">{genreMovies.length} movies available</p>
-              </div>
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {genreMovies.map((movie) => (
-                  <MovieCard key={movie.id} movie={movie} />
-                ))}
-              </div>
-            </section>
+            <>
+              {/* Movies by Genre Sections */}
+              {selectedGenre === "all" ? (
+                <div className="space-y-16">
+                  {genres.slice(1).map((genre) => {
+                    const genreMovies = getMoviesByGenre(genre)
+                    if (genreMovies.length === 0) return null
+
+                    return (
+                      <section key={genre}>
+                        <div className="mb-6 flex items-center gap-3">
+                          <h2 className="text-3xl font-bold capitalize">{genre}</h2>
+                          <span className="rounded-full bg-primary/20 px-3 py-1 text-sm font-semibold">
+                            {genreMovies.length} movies
+                          </span>
+                        </div>
+                        <Suspense fallback={<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                          {[...Array(4)].map((_, i) => <MovieSkeleton key={i} />)}
+                        </div>}>
+                          <MovieGrid movies={genreMovies} />
+                        </Suspense>
+                      </section>
+                    )
+                  })}
+                </div>
+              ) : (
+                <section>
+                  <div className="mb-6 text-center">
+                    <h2 className="text-3xl font-bold capitalize">{selectedGenre} Movies</h2>
+                    <p className="mt-2 text-muted-foreground">{genreMovies.length} movies available</p>
+                  </div>
+                  <Suspense fallback={<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    {[...Array(8)].map((_, i) => <MovieSkeleton key={i} />)}
+                  </div>}>
+                    <MovieGrid movies={genreMovies} />
+                  </Suspense>
+                </section>
+              )}
+            </>
           )}
         </div>
       </div>

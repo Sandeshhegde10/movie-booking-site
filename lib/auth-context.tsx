@@ -8,6 +8,7 @@ interface AuthContextType {
   profile: UserProfile | null
   isLoading: boolean
   login: (email: string, password: string) => Promise<void>
+  register: (email: string, password: string, name: string) => Promise<void>
   logout: () => void
   updateProfile: (profileData: Partial<UserProfile>) => Promise<void>
   isAuthenticated: boolean
@@ -61,12 +62,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const initAuth = async () => {
       try {
-        // Simulate checking for existing session
+        // Check for existing session in localStorage
         const storedUser = localStorage.getItem("user")
         if (storedUser) {
           const userData = JSON.parse(storedUser)
           setUser(userData)
-          setProfile(mockProfile)
+          // TODO: Optionally fetch fresh profile from database
+          // const profileData = await getUserProfile(userData.id)
+          // if (profileData) setProfile(profileData)
         }
       } catch (error) {
         console.error("Failed to initialize auth:", error)
@@ -81,20 +84,82 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string) => {
     setIsLoading(true)
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      const { loginUser } = await import("@/app/actions/auth")
+      const result = await loginUser(email, password)
+
+      if (!result.success || !result.user) {
+        throw new Error(result.error || "Login failed")
+      }
 
       const userData: User = {
-        id: "1",
-        email,
-        name: "John Doe",
+        id: result.user.id,
+        email: result.user.email,
+        name: result.user.name || "User",
         isAuthenticated: true,
       }
 
       setUser(userData)
-      setProfile(mockProfile)
       localStorage.setItem("user", JSON.stringify(userData))
+
+      // Set a basic profile (can be enhanced with getUserProfile later)
+      setProfile({
+        id: result.user.id,
+        email: result.user.email,
+        name: result.user.name || "User",
+        phone: "",
+        dateOfBirth: "",
+        favoriteGenres: [],
+        preferredCity: "",
+        preferredTheater: "",
+        loyaltyPoints: 0,
+        watchedMovies: [],
+        bookingHistory: [],
+        avatar: "/placeholder-user.jpg",
+      })
     } catch (error) {
-      throw new Error("Login failed")
+      throw error instanceof Error ? error : new Error("Login failed")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const register = async (email: string, password: string, name: string) => {
+    setIsLoading(true)
+    try {
+      const { registerUser } = await import("@/app/actions/auth")
+      const result = await registerUser(email, password, name)
+
+      if (!result.success || !result.user) {
+        throw new Error(result.error || "Registration failed")
+      }
+
+      const userData: User = {
+        id: result.user.id,
+        email: result.user.email,
+        name: result.user.name || name,
+        isAuthenticated: true,
+      }
+
+      setUser(userData)
+      localStorage.setItem("user", JSON.stringify(userData))
+
+      // Set a basic profile
+      setProfile({
+        id: result.user.id,
+        email: result.user.email,
+        name: result.user.name || name,
+        phone: "",
+        dateOfBirth: "",
+        favoriteGenres: [],
+        preferredCity: "",
+        preferredTheater: "",
+        loyaltyPoints: 0,
+        watchedMovies: [],
+        bookingHistory: [],
+        avatar: "/placeholder-user.jpg",
+      })
+    } catch (error) {
+      throw error instanceof Error ? error : new Error("Registration failed")
     } finally {
       setIsLoading(false)
     }
@@ -109,12 +174,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const updateProfile = async (profileData: Partial<UserProfile>) => {
     setIsLoading(true)
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500))
-
       if (profile) {
         const updatedProfile = { ...profile, ...profileData }
         setProfile(updatedProfile)
-        localStorage.setItem("profile", JSON.stringify(updatedProfile))
+        // TODO: Add server action to save profile updates to database
       }
     } catch (error) {
       throw new Error("Profile update failed")
@@ -130,6 +193,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         profile,
         isLoading,
         login,
+        register,
         logout,
         updateProfile,
         isAuthenticated: !!user?.isAuthenticated,

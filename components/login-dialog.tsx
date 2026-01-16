@@ -14,9 +14,10 @@ import { useToast } from "@/hooks/use-toast"
 interface LoginDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  onSignUpClick?: () => void
 }
 
-export function LoginDialog({ open, onOpenChange }: LoginDialogProps) {
+export function LoginDialog({ open, onOpenChange, onSignUpClick }: LoginDialogProps) {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -37,9 +38,10 @@ export function LoginDialog({ open, onOpenChange }: LoginDialogProps) {
       setEmail("")
       setPassword("")
     } catch (error) {
+      console.error("Login error:", error)
       toast({
         title: "Login failed",
-        description: "Please check your credentials and try again.",
+        description: error instanceof Error ? error.message : "Please check your credentials and try again.",
         variant: "destructive",
       })
     } finally {
@@ -87,9 +89,16 @@ export function LoginDialog({ open, onOpenChange }: LoginDialogProps) {
             Sign In
           </Button>
 
-          <p className="text-center text-sm text-muted-foreground">
-            Demo credentials: Any email and password will work
-          </p>
+          <div className="text-center text-sm">
+            <span className="text-muted-foreground">Don't have an account? </span>
+            <button
+              type="button"
+              onClick={onSignUpClick}
+              className="font-medium text-primary hover:underline"
+            >
+              Sign up here
+            </button>
+          </div>
         </form>
       </DialogContent>
     </Dialog>
