@@ -63,14 +63,14 @@ export const generateSeats = (): Seat[] => {
   rows.forEach((row, rowIndex) => {
     for (let i = 1; i <= 12; i++) {
       let type: "standard" | "premium" | "vip" = "standard"
-      let price = 499
+      let price = 249
 
       if (rowIndex >= 5) {
         type = "vip"
-        price = 999
+        price = 499
       } else if (rowIndex >= 3) {
         type = "premium"
-        price = 749
+        price = 374
       }
 
       seats.push({
@@ -94,14 +94,14 @@ export const generateParkingSlots = (): ParkingSlot[] => {
   levels.forEach((level) => {
     for (let i = 1; i <= 20; i++) {
       let type: "standard" | "covered" | "vip" = "standard"
-      let price = 199
+      let price = 99
 
       if (i <= 5) {
         type = "vip"
-        price = 599
+        price = 299
       } else if (i <= 10) {
         type = "covered"
-        price = 399
+        price = 199
       }
 
       slots.push({
